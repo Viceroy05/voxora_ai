@@ -57,9 +57,9 @@ export default function BillingPage() {
             <Button asChild variant="secondary">
               <Link href="/dashboard/analytics">See ROI details</Link>
             </Button>
-            <Button>
+            <Button disabled title="Invoice export is not wired yet.">
               <Download className="size-4" />
-              Download invoices
+              Export coming soon
             </Button>
           </>
         }

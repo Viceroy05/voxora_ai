@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, LockKeyhole, ShieldCheck } from "lucide-react";
+import { Suspense } from "react";
+import { LockKeyhole, ShieldCheck } from "lucide-react";
 
+import { LoginForm } from "@/components/auth/login-form";
 import { SiteLogo } from "@/components/layout/site-logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export const metadata: Metadata = {
   title: "Login | Voxora AI",
@@ -61,29 +62,11 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <form className="mt-8 grid gap-4">
-              <label className="grid gap-2 text-sm text-white">
-                <span>Work email</span>
-                <Input type="email" placeholder="name@company.com" />
-              </label>
-              <label className="grid gap-2 text-sm text-white">
-                <span>Password</span>
-                <Input type="password" placeholder="Enter your password" />
-              </label>
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center gap-2 text-muted-foreground">
-                  <input type="checkbox" className="size-4 rounded border-white/12 bg-white/5" />
-                  Keep me signed in
-                </label>
-                <Link href="/contact" className="text-primary transition hover:text-primary/80">
-                  Need access?
-                </Link>
-              </div>
-              <Button type="button" size="lg" className="mt-2">
-                Login
-                <ArrowRight className="size-4" />
-              </Button>
-            </form>
+            <div className="mt-8">
+              <Suspense fallback={<div className="text-sm text-muted-foreground">Loading sign-in...</div>}>
+                <LoginForm />
+              </Suspense>
+            </div>
 
             <div className="mt-8 rounded-[1.5rem] border border-white/8 bg-slate-950/45 px-4 py-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-3 text-white">

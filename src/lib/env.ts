@@ -18,7 +18,17 @@ function required(name: string, schema: z.ZodType<string> = nonEmptyString) {
 }
 
 export function getAppUrl() {
-  return readEnv("APP_URL") ?? "http://localhost:3000";
+  const appUrl = readEnv("APP_URL");
+
+  if (appUrl) {
+    return appUrl;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Missing or invalid environment variable: APP_URL");
+  }
+
+  return "http://localhost:3000";
 }
 
 export function getDatabaseUrl() {

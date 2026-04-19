@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 
 type StatusBadgeProps = {
-  label: string;
+  label?: string;
+  status?: string;
 };
 
 function getVariant(label: string) {
@@ -39,7 +40,7 @@ function getVariant(label: string) {
   return "secondary" as const;
 }
 
-export function StatusBadge({ label }: StatusBadgeProps) {
-  const displayLabel = label || "Unknown";
+export function StatusBadge({ label, status }: StatusBadgeProps) {
+  const displayLabel = label ?? status ?? "Unknown";
   return <Badge variant={getVariant(displayLabel)}>{displayLabel}</Badge>;
 }

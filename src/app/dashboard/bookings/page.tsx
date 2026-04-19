@@ -8,6 +8,12 @@ import {
   DashboardTable,
   type DashboardTableColumn,
 } from "@/components/dashboard/dashboard-table";
+import { DonutChartCard } from "@/components/dashboard/donut-chart-card";
+import { MetricGrid } from "@/components/dashboard/metric-grid";
+import { StatusBadge } from "@/components/dashboard/status-badge";
+import { FadeIn } from "@/components/shared/fade-in";
+import { Button } from "@/components/ui/button";
+import { useCurrentBusiness } from "@/components/dashboard/useCurrentBusiness";
 
 interface BookingData {
   id: string;
@@ -17,12 +23,12 @@ interface BookingData {
   status: string;
   amountCents: number;
 }
-import { DonutChartCard } from "@/components/dashboard/donut-chart-card";
-import { MetricGrid } from "@/components/dashboard/metric-grid";
-import { StatusBadge } from "@/components/dashboard/status-badge";
-import { FadeIn } from "@/components/shared/fade-in";
-import { Button } from "@/components/ui/button";
-import { useCurrentBusiness } from "@/components/dashboard/useCurrentBusiness";
+
+type BookingApiResponse = {
+  data?: {
+    bookings?: BookingData[];
+  };
+};
 
 type BookingRow = {
   id: string;
@@ -48,8 +54,11 @@ type DonutSegment = {
 };
 
 function formatMoney(amountCents: number | null | undefined) {
-  if (!amountCents) return "₹0";
-  return `₹${(amountCents / 100).toLocaleString("en-IN")}`;
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format((amountCents ?? 0) / 100);
 }
 
 function formatDate(dateString: string) {
@@ -64,7 +73,7 @@ function buildMetrics(bookings: BookingRow[]): BookingMetric[] {
   const confirmed = bookings.filter((booking) => booking.status === "CONFIRMED").length;
   const rescheduled = bookings.filter((booking) => booking.status === "RESCHEDULED").length;
   const revenue = bookings.reduce((sum, booking) => {
-    const numeric = Number(booking.value.replace(/[₹,]/g, ""));
+    const numeric = Number(booking.value.replace(/[^\d.]/g, ""));
     return sum + (Number.isFinite(numeric) ? numeric : 0);
   }, 0);
 
@@ -72,25 +81,29 @@ function buildMetrics(bookings: BookingRow[]): BookingMetric[] {
     {
       label: "Bookings this week",
       value: `${total}`,
-      delta: "—",
+      delta: "--",
       helper: "Live bookings from the last load",
     },
     {
       label: "Confirmed bookings",
       value: `${confirmed}`,
-      delta: total ? `+${Math.round((confirmed / total) * 100)}%` : "—",
+      delta: total ? `+${Math.round((confirmed / total) * 100)}%` : "--",
       helper: "Confirmed appointments",
     },
     {
       label: "Revenue impact",
-      value: `₹${Math.round(revenue).toLocaleString("en-IN")}`,
-      delta: "—",
+      value: new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(revenue),
+      delta: "--",
       helper: "Estimated booking value",
     },
     {
       label: "Reschedules",
       value: `${rescheduled}`,
-      delta: total ? `${Math.round((rescheduled / total) * 100)}%` : "—",
+      delta: total ? `${Math.round((rescheduled / total) * 100)}%` : "--",
       helper: "Bookings changed after initial booking",
     },
   ];
@@ -157,13 +170,14 @@ export default function BookingsPage() {
         const response = await fetch(`/api/businesses/${businessId}/bookings?limit=25`, {
           cache: "no-store",
         });
+
         if (!response.ok) {
           const body = await response.text();
           throw new Error(body || "Unable to load booking data.");
         }
 
-        const payload = await response.json();
-        const rows = (payload.bookings ?? []).map((booking: BookingData) => ({
+        const payload = (await response.json()) as BookingApiResponse;
+        const rows = (payload.data?.bookings ?? []).map((booking) => ({
           id: booking.id,
           customer: booking.customerName,
           owner: "Voxora AI",
@@ -174,8 +188,8 @@ export default function BookingsPage() {
         }));
 
         setBookings(rows);
-      } catch (error) {
-        setError(error instanceof Error ? error.message : "Unable to load booking data.");
+      } catch (caughtError) {
+        setError(caughtError instanceof Error ? caughtError.message : "Unable to load booking data.");
       } finally {
         setLoading(false);
       }

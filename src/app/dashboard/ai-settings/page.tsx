@@ -32,9 +32,11 @@ export default function AISettingsPage() {
             <Button asChild variant="secondary">
               <Link href="/dashboard/analytics">See impact</Link>
             </Button>
-            <Button>
-              <Play className="size-4" />
-              Test voice flow
+            <Button asChild>
+              <Link href="/dashboard/call-simulator">
+                <Play className="size-4" />
+                Test voice flow
+              </Link>
             </Button>
           </>
         }

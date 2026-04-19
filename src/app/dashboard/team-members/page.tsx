@@ -55,9 +55,9 @@ export default function TeamMembersPage() {
             <Button asChild variant="secondary">
               <Link href="/dashboard/ai-settings">Escalation rules</Link>
             </Button>
-            <Button>
+            <Button disabled title="Team invitation UI is not wired yet.">
               <UserPlus className="size-4" />
-              Invite member
+              Invite member soon
             </Button>
           </>
         }

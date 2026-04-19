@@ -32,9 +32,9 @@ export default function IntegrationsPage() {
             <Button asChild variant="secondary">
               <Link href="/dashboard/ai-settings">Webhook rules</Link>
             </Button>
-            <Button>
+            <Button disabled title="Integration setup UI is not wired yet.">
               <Plus className="size-4" />
-              Add integration
+              Add integration soon
             </Button>
           </>
         }
@@ -61,9 +61,14 @@ export default function IntegrationsPage() {
                 </CardHeader>
                 <CardContent className="flex items-center justify-between gap-4">
                   <span className="text-sm text-muted-foreground">{integration.sync}</span>
-                  <Button variant="ghost" size="sm">
+                  <Button
+                    disabled
+                    title="Manual sync actions are not wired yet."
+                    variant="ghost"
+                    size="sm"
+                  >
                     <RefreshCcw className="size-4" />
-                    Sync
+                    Sync soon
                   </Button>
                 </CardContent>
               </Card>

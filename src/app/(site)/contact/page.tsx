@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CalendarDays, Mail, Phone } from "lucide-react";
 
+import { ContactForm } from "@/components/marketing/contact-form";
 import { PageHero } from "@/components/marketing/page-hero";
 import { FadeIn } from "@/components/shared/fade-in";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { contactHighlights } from "@/lib/site-data";
 
 export const metadata: Metadata = {
@@ -32,44 +29,7 @@ export default function ContactPage() {
                 We respond to demo requests within one business day.
               </p>
 
-              <form className="mt-8 grid gap-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-2 text-sm text-white">
-                    <span>Full name</span>
-                    <Input placeholder="Alex Morgan" />
-                  </label>
-                  <label className="grid gap-2 text-sm text-white">
-                    <span>Business name</span>
-                    <Input placeholder="Northside Dental" />
-                  </label>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-2 text-sm text-white">
-                    <span>Work email</span>
-                    <Input placeholder="alex@northside.com" type="email" />
-                  </label>
-                  <label className="grid gap-2 text-sm text-white">
-                    <span>Phone number</span>
-                    <Input placeholder="+1 (555) 123-4567" type="tel" />
-                  </label>
-                </div>
-                <label className="grid gap-2 text-sm text-white">
-                  <span>Industry</span>
-                  <Input placeholder="Clinic, salon, gym, real estate, or service business" />
-                </label>
-                <label className="grid gap-2 text-sm text-white">
-                  <span>Current workflow</span>
-                  <Textarea placeholder="Tell us how your team currently handles calls, bookings, and missed leads." />
-                </label>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button type="button" size="lg">
-                    Book Demo
-                  </Button>
-                  <Button asChild size="lg" variant="secondary">
-                    <Link href="/pricing">Start Free Trial</Link>
-                  </Button>
-                </div>
-              </form>
+              <ContactForm />
             </div>
           </FadeIn>
 
