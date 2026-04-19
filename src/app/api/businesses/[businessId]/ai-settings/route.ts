@@ -11,6 +11,19 @@ import {
   getDefaultAISettings,
 } from "@/lib/services/ai-settings-service";
 
+interface BookingQuestion {
+  text: string;
+  type: string;
+  options?: string[];
+}
+
+interface WorkingHour {
+  day: string;
+  start: string;
+  end: string;
+  enabled: boolean;
+}
+
 type RouteContext = {
   params: Promise<{
     businessId: string;
@@ -57,9 +70,9 @@ export async function GET(request: Request, context: RouteContext) {
           industry: settings.industry,
           voiceTone: settings.voiceTone,
           greetingScript: settings.greetingScript,
-          bookingQuestions: settings.bookingQuestions as any[],
+          bookingQuestions: settings.bookingQuestions as BookingQuestion[],
           languages: settings.languages as string[],
-          workingHours: settings.workingHours as any[],
+          workingHours: settings.workingHours as WorkingHour[],
           createdAt: settings.createdAt,
           updatedAt: settings.updatedAt,
         },
@@ -103,9 +116,9 @@ export async function POST(request: Request, context: RouteContext) {
             industry: result.settings.industry,
             voiceTone: result.settings.voiceTone,
             greetingScript: result.settings.greetingScript,
-            bookingQuestions: result.settings.bookingQuestions as any[],
+            bookingQuestions: result.settings.bookingQuestions as BookingQuestion[],
             languages: result.settings.languages as string[],
-            workingHours: result.settings.workingHours as any[],
+            workingHours: result.settings.workingHours as WorkingHour[],
             createdAt: result.settings.createdAt,
             updatedAt: result.settings.updatedAt,
           },

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireBusinessPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { ApiError } from "@/lib/api/errors";
 import { handleRouteError, json, parseJsonBody } from "@/lib/api/http";
 import { getPrisma } from "@/lib/prisma";
@@ -14,7 +15,7 @@ const updateOnboardingSchema = z.object({
 export async function GET(request: Request, { params }: { params: Promise<{ businessId: string }> }) {
   try {
     const { businessId } = await params;
-    const { business } = await requireBusinessPermission(businessId, "VIEW_BUSINESS");
+    const { business } = await requireBusinessPermission(businessId, PERMISSIONS.BUSINESS_READ);
     const prisma = getPrisma();
 
     let onboarding = await prisma.businessOnboarding.findUnique({
@@ -59,7 +60,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ busi
 export async function PATCH(request: Request, { params }: { params: Promise<{ businessId: string }> }) {
   try {
     const { businessId } = await params;
-    const { business } = await requireBusinessPermission(businessId, "MANAGE_BUSINESS");
+    const { business } = await requireBusinessPermission(businessId, PERMISSIONS.BUSINESS_WRITE);
     const prisma = getPrisma();
 
     const body = await parseJsonBody(request, updateOnboardingSchema);

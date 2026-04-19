@@ -1,4 +1,4 @@
-import { CallStatus, BookingStatus } from "@prisma/client";
+import { CallStatus, BookingStatus, PrismaClient } from "@prisma/client";
 import { ApiError } from "@/lib/api/errors";
 import { PERMISSIONS } from "@/lib/permissions";
 import { requireBusinessPermission } from "@/lib/auth";
@@ -94,7 +94,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 }
 
-async function getCallsAnalytics(prisma: any, businessId: string, startDate: Date) {
+async function getCallsAnalytics(prisma: PrismaClient, businessId: string, startDate: Date) {
   const [total, completed, missed, byStatus, byDay] = await Promise.all([
     prisma.callLog.count({
       where: { businessId, createdAt: { gte: startDate } },
@@ -143,7 +143,7 @@ async function getCallsAnalytics(prisma: any, businessId: string, startDate: Dat
   };
 }
 
-async function getBookingsAnalytics(prisma: any, businessId: string, startDate: Date) {
+async function getBookingsAnalytics(prisma: PrismaClient, businessId: string, startDate: Date) {
   const [total, byStatus, byDay, withRevenue] = await Promise.all([
     prisma.bookingRecord.count({
       where: { businessId, createdAt: { gte: startDate } },
@@ -177,11 +177,11 @@ async function getBookingsAnalytics(prisma: any, businessId: string, startDate: 
   const dayGroups = groupByDay(byDay, 'createdAt');
 
   // Calculate revenue
-  const revenue = withRevenue.reduce((sum: number, b: any) => sum + (b.amountCents || 0), 0);
+  const revenue = withRevenue.reduce((sum: number, b: { amountCents: number | null }) => sum + (b.amountCents || 0), 0);
 
   return {
     total,
-    byStatus: byStatus.reduce((acc: any, item: any) => {
+    byStatus: byStatus.reduce((acc: Record<string, number>, item: { status: string; _count: number }) => {
       acc[item.status] = item._count;
       return acc;
     }, {}),
@@ -229,15 +229,15 @@ async function getAIJobsAnalytics(prisma: any, businessId: string, startDate: Da
 
   // Calculate average processing time
   const processingTimes = avgProcessingTime
-    .filter((job: any) => job.startedAt && job.completedAt)
-    .map((job: any) => {
+    .filter((job: { startedAt: Date | null; completedAt: Date | null }) => job.startedAt && job.completedAt)
+    .map((job: { startedAt: Date; completedAt: Date }) => {
       const started = new Date(job.startedAt).getTime();
       const completed = new Date(job.completedAt).getTime();
       return completed - started;
     });
 
   const avgTime = processingTimes.length > 0
-    ? processingTimes.reduce((sum, time) => sum + time, 0) / processingTimes.length
+    ? processingTimes.reduce((sum: number, time: number) => sum + time, 0) / processingTimes.length
     : 0;
 
   return {

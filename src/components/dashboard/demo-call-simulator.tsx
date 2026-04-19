@@ -12,6 +12,20 @@ type SimulationStep = {
   status: "pending" | "running" | "completed" | "skipped";
 };
 
+type CallResult = {
+  callLog: unknown;
+  booking: unknown;
+  bookingCreated: boolean;
+  aiJob: unknown;
+  scenario: {
+    customerName: string;
+    customerPhone: string;
+    serviceName: string;
+    disposition: string;
+  };
+  steps: SimulationStep[];
+};
+
 type DemoCallSimulatorProps = {
   businessId: string;
   onSimulationComplete?: () => void;
@@ -20,7 +34,7 @@ type DemoCallSimulatorProps = {
 export function DemoCallSimulator({ businessId, onSimulationComplete }: DemoCallSimulatorProps) {
   const [isSimulating, setIsSimulating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<CallResult | null>(null);
   const [steps, setSteps] = useState<SimulationStep[]>([
     { step: 1, name: "Incoming Call", status: "pending" },
     { step: 2, name: "Call Answered", status: "pending" },
@@ -56,7 +70,7 @@ export function DemoCallSimulator({ businessId, onSimulationComplete }: DemoCall
 
       // Update steps based on API response
       if (data.steps) {
-        setSteps(data.steps.map((s: any) => ({
+        setSteps(data.steps.map((s: SimulationStep) => ({
           step: s.step,
           name: s.name,
           status: s.status as "completed" | "skipped"

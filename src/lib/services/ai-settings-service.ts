@@ -1,13 +1,26 @@
 import { getPrisma } from "@/lib/prisma";
 
+interface BookingQuestion {
+  text: string;
+  type: string;
+  options?: string[];
+}
+
+interface WorkingHour {
+  day: string;
+  start: string;
+  end: string;
+  enabled: boolean;
+}
+
 interface AISettings {
   businessName?: string;
   industry?: string;
   voiceTone?: string;
   greetingScript?: string;
-  bookingQuestions?: any[];
+  bookingQuestions?: BookingQuestion[];
   languages?: string[];
-  workingHours?: any[];
+  workingHours?: WorkingHour[];
 }
 
 /**
@@ -93,7 +106,7 @@ export async function updateAISettings(businessId: string, data: AISettings) {
 /**
  * Validate AI settings
  */
-export function validateAISettings(data: any): { valid: boolean; errors: string[] } {
+export function validateAISettings(data: AISettings): { valid: boolean; errors: string[] } {
   const errors: string[] = [];
 
   // Validate business name
@@ -117,7 +130,7 @@ export function validateAISettings(data: any): { valid: boolean; errors: string[
     if (!Array.isArray(data.bookingQuestions)) {
       errors.push("Booking questions must be an array");
     } else {
-      data.bookingQuestions.forEach((question: any, index: number) => {
+      data.bookingQuestions.forEach((question: BookingQuestion, index: number) => {
         if (!question.text || question.text.length < 5 || question.text.length > 200) {
           errors.push(`Question ${index + 1}: Text must be between 5 and 200 characters`);
         }
@@ -147,7 +160,7 @@ export function validateAISettings(data: any): { valid: boolean; errors: string[
     if (!Array.isArray(data.workingHours)) {
       errors.push("Working hours must be an array");
     } else {
-      data.workingHours.forEach((hours: any, index: number) => {
+      data.workingHours.forEach((hours: WorkingHour, index: number) => {
         if (!hours.day || !hours.start || !hours.end) {
           errors.push(`Working hours entry ${index + 1}: Missing required fields (day, start, end)`);
         }

@@ -172,7 +172,7 @@ function formatDuration(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-function calculateAvgDuration(calls: any[]): string {
+function calculateAvgDuration(calls: Array<{ durationSeconds: number | null }>): string {
   const callsWithDuration = calls.filter(c => c.durationSeconds);
   if (callsWithDuration.length === 0) return 'N/A';
 

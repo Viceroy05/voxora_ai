@@ -331,7 +331,7 @@ function getRazorpayPlanId(plan: SubscriptionPlan): string {
 /**
  * Process payment success webhook
  */
-export async function processPaymentSuccess(payload: any) {
+export async function processPaymentSuccess(payload: Record<string, unknown>) {
   const prisma = getPrisma();
 
   const businessId = payload.notes?.businessId;
@@ -361,7 +361,7 @@ export async function processPaymentSuccess(payload: any) {
 /**
  * Process payment failure webhook
  */
-export async function processPaymentFailure(payload: any) {
+export async function processPaymentFailure(payload: Record<string, unknown>) {
   const prisma = getPrisma();
 
   const businessId = payload.notes?.businessId;
@@ -391,7 +391,7 @@ export async function processPaymentFailure(payload: any) {
 /**
  * Process subscription cancellation webhook
  */
-export async function processSubscriptionCancellation(payload: any) {
+export async function processSubscriptionCancellation(payload: Record<string, unknown>) {
   const prisma = getPrisma();
 
   const subscriptionId = payload.subscription?.id;

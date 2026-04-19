@@ -111,7 +111,7 @@ export function PricingCards({ showHeading = true }: PricingCardsProps) {
             <div>
               <div className="text-sm font-semibold text-violet-400 uppercase tracking-wide">Free migration</div>
               <div className="mt-2 text-base text-white">From any provider</div>
-              <div className="mt-1 text-sm text-muted-foreground">We'll handle the transition.</div>
+              <div className="mt-1 text-sm text-muted-foreground">We&apos;ll handle the transition.</div>
             </div>
           </div>
         </div>

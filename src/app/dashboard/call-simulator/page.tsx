@@ -15,10 +15,10 @@ type SimulationStep = {
 };
 
 type CallResult = {
-  callLog: any;
-  booking: any;
+  callLog: unknown;
+  booking: unknown;
   bookingCreated: boolean;
-  aiJob: any;
+  aiJob: unknown;
   scenario: {
     customerName: string;
     customerPhone: string;

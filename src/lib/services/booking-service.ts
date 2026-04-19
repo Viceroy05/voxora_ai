@@ -14,7 +14,7 @@ interface CreateBookingParams {
   currency?: string;
   notes?: string;
   callLogId?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -194,7 +194,7 @@ export async function getBusinessBookings(
 ) {
   const prisma = getPrisma();
 
-  const where: any = {
+  const where: Record<string, unknown> = {
     businessId,
   };
 

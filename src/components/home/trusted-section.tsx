@@ -40,7 +40,7 @@ export function TrustedSection() {
           </div>
 
           <p className="text-center text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground mb-8">
-            Trusted by India's best service businesses
+            Trusted by India&apos;s best service businesses
           </p>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">

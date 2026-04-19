@@ -5,6 +5,11 @@ import { requireBusinessPermission } from "@/lib/auth";
 import { handleRouteError, json } from "@/lib/api/http";
 import { getPrisma } from "@/lib/prisma";
 
+interface AIAnalysis {
+  sentiment?: string;
+  disposition?: string;
+}
+
 type RouteContext = {
   params: Promise<{
     businessId: string;
@@ -108,8 +113,8 @@ export async function GET(request: Request, context: RouteContext) {
         metadata: {
           callSid: call.callSid,
           duration: call.durationSeconds,
-          sentiment: (call.aiAnalysis as any)?.sentiment,
-          disposition: (call.aiAnalysis as any)?.disposition,
+          sentiment: (call.aiAnalysis as AIAnalysis)?.sentiment,
+          disposition: (call.aiAnalysis as AIAnalysis)?.disposition,
           bookingCreated: call.bookings && call.bookings.length > 0,
         },
       })),

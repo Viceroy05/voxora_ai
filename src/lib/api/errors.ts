@@ -125,8 +125,8 @@ export function sanitizeErrorDetails(details: unknown): unknown {
   // If it's a Zod validation error, flatten it
   if (typeof details === "object" && details !== null && "fieldErrors" in details) {
     return {
-      fieldErrors: (details as any).fieldErrors,
-      formErrors: (details as any).formErrors,
+      fieldErrors: (details as { fieldErrors: unknown }).fieldErrors,
+      formErrors: (details as { formErrors: unknown }).formErrors,
     };
   }
 

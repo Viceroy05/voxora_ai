@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireBusinessPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { ApiError } from "@/lib/api/errors";
 import { handleRouteError, json, parseJsonBody } from "@/lib/api/http";
 import { getPrisma } from "@/lib/prisma";
@@ -23,7 +24,7 @@ const updateSubscriptionSchema = z.object({
 export async function GET(request: Request, { params }: { params: Promise<{ businessId: string }> }) {
   try {
     const { businessId } = await params;
-    const { business } = await requireBusinessPermission(businessId, "VIEW_BUSINESS");
+    const { business } = await requireBusinessPermission(businessId, PERMISSIONS.BUSINESS_READ);
     const prisma = getPrisma();
 
     const subscription = await prisma.businessSubscription.findFirst({
@@ -72,7 +73,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ busi
 export async function POST(request: Request, { params }: { params: Promise<{ businessId: string }> }) {
   try {
     const { businessId } = await params;
-    const { business } = await requireBusinessPermission(businessId, "MANAGE_BUSINESS");
+    const { business } = await requireBusinessPermission(businessId, PERMISSIONS.BUSINESS_WRITE);
     const prisma = getPrisma();
 
     const body = await parseJsonBody(request, updateSubscriptionSchema);

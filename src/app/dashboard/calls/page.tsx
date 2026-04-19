@@ -13,6 +13,17 @@ import { LineChartCard } from "@/components/dashboard/line-chart-card";
 import { MetricGrid } from "@/components/dashboard/metric-grid";
 import { ProgressListCard } from "@/components/dashboard/progress-list-card";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+
+interface CallData {
+  id: string;
+  customerName?: string;
+  callerPhone?: string;
+  direction?: string;
+  aiAnalysis?: unknown;
+  durationSeconds?: number;
+  summaryText?: string;
+  status?: string;
+}
 import { FadeIn } from "@/components/shared/fade-in";
 import { Button } from "@/components/ui/button";
 import { useCurrentBusiness } from "@/components/dashboard/useCurrentBusiness";
@@ -228,7 +239,7 @@ export default function CallsPage() {
         }
 
         const payload = await response.json();
-        const rows = (payload.calls ?? []).map((call: any) => {
+        const rows = (payload.calls ?? []).map((call: CallData) => {
           const analysis = typeof call.aiAnalysis === "object" ? call.aiAnalysis : {};
           return {
             id: call.id,

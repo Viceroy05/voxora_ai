@@ -9,8 +9,27 @@ type RouteContext = {
   }>;
 };
 
+interface IndustryPreset {
+  businessName: string;
+  industry: string;
+  voiceTone: string;
+  greetingScript: string;
+  bookingQuestions: Array<{
+    text: string;
+    type: string;
+    options?: string[];
+  }>;
+  languages: string[];
+  workingHours: Array<{
+    day: string;
+    start: string;
+    end: string;
+    enabled: boolean;
+  }>;
+}
+
 // AI settings presets for different industries
-const INDUSTRY_PRESETS: Record<string, any> = {
+const INDUSTRY_PRESETS: Record<string, IndustryPreset> = {
   healthcare: {
     businessName: "Medical Reception",
     industry: "Healthcare",

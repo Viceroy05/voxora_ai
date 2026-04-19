@@ -28,7 +28,7 @@ interface CallLogData {
   startedAt?: Date;
   answeredAt?: Date;
   completedAt?: Date;
-  rawPayload?: any;
+  rawPayload?: Record<string, unknown>;
 }
 
 /**
@@ -271,7 +271,7 @@ export async function createWebhookEvent(
   eventType: string,
   externalEventId: string,
   signature: string | null,
-  payload: any,
+  payload: Record<string, unknown>,
   status: "RECEIVED" | "PROCESSED" | "FAILED" | "IGNORED" = "RECEIVED"
 ) {
   const prisma = getPrisma();

@@ -108,7 +108,7 @@ export async function analyzeCallTranscript({
         ...callAnalysisJsonSchema,
       },
     },
-  } as any);
+  });
 
   const rawText = response.output_text;
 

@@ -8,6 +8,15 @@ import {
   DashboardTable,
   type DashboardTableColumn,
 } from "@/components/dashboard/dashboard-table";
+
+interface BookingData {
+  id: string;
+  customerName: string;
+  serviceName: string;
+  startsAt: string;
+  status: string;
+  amountCents: number;
+}
 import { DonutChartCard } from "@/components/dashboard/donut-chart-card";
 import { MetricGrid } from "@/components/dashboard/metric-grid";
 import { StatusBadge } from "@/components/dashboard/status-badge";
@@ -154,7 +163,7 @@ export default function BookingsPage() {
         }
 
         const payload = await response.json();
-        const rows = (payload.bookings ?? []).map((booking: any) => ({
+        const rows = (payload.bookings ?? []).map((booking: BookingData) => ({
           id: booking.id,
           customer: booking.customerName,
           owner: "Voxora AI",

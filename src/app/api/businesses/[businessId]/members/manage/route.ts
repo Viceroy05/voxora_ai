@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { requireBusinessPermission } from "@/lib/auth";
+import { PERMISSIONS } from "@/lib/permissions";
 import { ApiError } from "@/lib/api/errors";
 import { handleRouteError, json, parseJsonBody } from "@/lib/api/http";
 import { getPrisma } from "@/lib/prisma";
@@ -19,7 +20,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ bus
     const { businessId } = await params;
     const { business, membership } = await requireBusinessPermission(
       businessId,
-      "MANAGE_TEAM"
+      PERMISSIONS.MEMBERS_WRITE
     );
     const prisma = getPrisma();
 
@@ -58,7 +59,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ bus
     const existingMembership = await prisma.businessMembership.findUnique({
       where: {
         businessId_userId: {
-          businessId: params.businessId,
+          businessId: businessId,
           userId: targetUser.id,
         },
       },
@@ -75,7 +76,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ bus
     // Create membership
     const newMembership = await prisma.businessMembership.create({
       data: {
-        businessId: params.businessId,
+        businessId: businessId,
         userId: targetUser.id,
         role: body.role,
       },
@@ -117,7 +118,7 @@ export async function PATCH(
     const { businessId } = await params;
     const { business, membership } = await requireBusinessPermission(
       businessId,
-      "MANAGE_TEAM"
+      PERMISSIONS.MEMBERS_WRITE
     );
     const prisma = getPrisma();
 
@@ -145,7 +146,7 @@ export async function PATCH(
     }
 
     // Check if the target membership belongs to this business
-    if (targetMembership.businessId !== params.businessId) {
+    if (targetMembership.businessId !== businessId) {
       throw new ApiError(
         403,
         "forbidden",
@@ -209,7 +210,7 @@ export async function DELETE(
     const { businessId } = await params;
     const { business, membership } = await requireBusinessPermission(
       businessId,
-      "MANAGE_TEAM"
+      PERMISSIONS.MEMBERS_WRITE
     );
     const prisma = getPrisma();
 
@@ -235,7 +236,7 @@ export async function DELETE(
     }
 
     // Check if the target membership belongs to this business
-    if (targetMembership.businessId !== params.businessId) {
+    if (targetMembership.businessId !== businessId) {
       throw new ApiError(
         403,
         "forbidden",

@@ -26,7 +26,7 @@ export async function withAuth() {
 export async function withBusinessAuth(businessId: string, permission: string) {
   try {
     const { requireBusinessPermission } = await import("@/lib/auth");
-    return await requireBusinessPermission(businessId, permission as any);
+    return await requireBusinessPermission(businessId, permission);
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
