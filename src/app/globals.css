@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  color-scheme: dark;
+  --background: oklch(0.12 0.03 258);
+  --foreground: oklch(0.97 0.01 255);
+  --card: oklch(0.16 0.025 255);
+  --card-foreground: oklch(0.97 0.01 255);
+  --popover: oklch(0.16 0.025 255);
+  --popover-foreground: oklch(0.97 0.01 255);
+  --primary: oklch(0.73 0.19 250);
+  --primary-foreground: oklch(0.1 0.02 255);
+  --secondary: oklch(0.23 0.03 256);
+  --secondary-foreground: oklch(0.95 0.01 255);
+  --muted: oklch(0.22 0.02 255);
+  --muted-foreground: oklch(0.72 0.03 255);
+  --accent: oklch(0.28 0.05 252);
+  --accent-foreground: oklch(0.96 0.01 255);
+  --destructive: oklch(0.66 0.22 25);
+  --border: oklch(0.3 0.03 255 / 45%);
+  --input: oklch(0.25 0.03 255 / 75%);
+  --ring: oklch(0.69 0.17 250 / 55%);
+  --chart-1: oklch(0.73 0.19 250);
+  --chart-2: oklch(0.72 0.18 204);
+  --chart-3: oklch(0.82 0.14 161);
+  --chart-4: oklch(0.78 0.17 82);
+  --chart-5: oklch(0.71 0.15 18);
+  --radius: 1.5rem;
+  --page-max: 80rem;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.5rem);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(41, 121, 255, 0.28), transparent 32%),
+    radial-gradient(circle at 85% 15%, rgba(0, 212, 255, 0.18), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 25%),
+    linear-gradient(180deg, #030711 0%, #060d1f 35%, #040815 100%);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+  content: "";
+  pointer-events: none;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgba(95, 160, 255, 0.4);
+  color: white;
+}
+
+.page-shell {
+  width: min(100% - 1.5rem, var(--page-max));
+  margin-inline: auto;
+}
+
+.surface {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(9, 15, 33, 0.7);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 20px 80px rgba(2, 6, 23, 0.45);
+}
+
+.surface-strong {
+  background:
+    linear-gradient(180deg, rgba(83, 158, 255, 0.17), rgba(255, 255, 255, 0.02)),
+    rgba(10, 16, 36, 0.84);
+  backdrop-filter: blur(22px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 120px rgba(4, 10, 24, 0.6);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, #b6cdff 38%, #67a0ff 70%, #7af0ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hairline {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shadow-glow {
+  box-shadow:
+    0 0 0 1px rgba(103, 160, 255, 0.2),
+    0 18px 80px rgba(64, 116, 255, 0.28);
+}
+
+.balanced {
+  text-wrap: balance;
+}

@@ -1,0 +1,284 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MANAGER
+  AGENT
+  VIEWER
+}
+
+enum SubscriptionPlan {
+  FREE
+  STARTER
+  GROWTH
+  SCALE
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+  PENDING
+}
+
+enum BillingProvider {
+  RAZORPAY
+}
+
+enum CallDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum CallStatus {
+  QUEUED
+  RINGING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  NO_ANSWER
+  CANCELED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  RESCHEDULED
+  CANCELED
+  COMPLETED
+}
+
+enum WebhookProvider {
+  TWILIO
+  RAZORPAY
+}
+
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  FAILED
+  IGNORED
+}
+
+enum AIJobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum AIJobType {
+  CALL_ANALYSIS
+}
+
+model User {
+  id                String               @id @db.Uuid
+  email             String               @unique
+  fullName          String?
+  avatarUrl         String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  createdBusinesses Business[]           @relation("BusinessCreator")
+  memberships       BusinessMembership[]
+}
+
+model Business {
+  id                String               @id @default(uuid()) @db.Uuid
+  slug              String               @unique
+  name              String
+  industry          String?
+  timezone          String               @default("UTC")
+  twilioPhoneNumber String?
+  websiteUrl        String?
+  metadata          Json?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  createdById       String               @db.Uuid
+  createdBy         User                 @relation("BusinessCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  memberships       BusinessMembership[]
+  subscriptions     BusinessSubscription[]
+  callLogs          CallLog[]
+  bookings          BookingRecord[]
+  webhookEvents     WebhookEvent[]
+  aiJobs            AiProcessingJob[]
+  onboarding        BusinessOnboarding?
+  aiSettings        BusinessAISettings?
+
+  @@index([createdById])
+}
+
+model BusinessOnboarding {
+  id              String   @id @default(uuid()) @db.Uuid
+  businessId      String   @unique @db.Uuid
+  profileComplete Boolean  @default(false)
+  billingComplete Boolean  @default(false)
+  teamComplete    Boolean  @default(false)
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  business        Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model BusinessAISettings {
+  id                String   @id @default(uuid()) @db.Uuid
+  businessId        String   @unique @db.Uuid
+  businessName      String   @default("Voxora AI")
+  industry          String?
+  voiceTone        String   @default("professional")
+  greetingScript    String   @default("Hello, you have reached {businessName}. How can I help you today?")
+  bookingQuestions  Json     @default("[]")
+  languages         Json     @default("[\"en\"]")
+  workingHours      Json     @default("[]")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  business          Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+model BusinessMembership {
+  id         String         @id @default(uuid()) @db.Uuid
+  businessId String         @db.Uuid
+  userId     String         @db.Uuid
+  role       MembershipRole
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  business   Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, userId])
+  @@index([userId])
+  @@index([businessId, role])
+}
+
+model BusinessSubscription {
+  id                     String             @id @default(uuid()) @db.Uuid
+  businessId             String             @db.Uuid
+  provider               BillingProvider    @default(RAZORPAY)
+  plan                   SubscriptionPlan
+  status                 SubscriptionStatus @default(PENDING)
+  providerCustomerId     String?
+  providerOrderId        String?
+  providerPaymentId      String?
+  providerSubscriptionId String?
+  amountCents            Int
+  currency               String             @default("INR")
+  seats                  Int                @default(1)
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  metadata               Json?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  business               Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, status])
+  @@index([provider, providerOrderId])
+  @@index([provider, providerSubscriptionId])
+}
+
+model CallLog {
+  id              String         @id @default(uuid()) @db.Uuid
+  businessId      String         @db.Uuid
+  callSid         String         @unique
+  direction       CallDirection
+  status          CallStatus     @default(QUEUED)
+  callerPhone     String
+  recipientPhone  String
+  customerName    String?
+  durationSeconds Int?
+  recordingUrl    String?
+  transcriptText  String?        @db.Text
+  summaryText     String?        @db.Text
+  aiAnalysis      Json?
+  rawPayload      Json?
+  startedAt       DateTime?
+  answeredAt      DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  business        Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bookings        BookingRecord[]
+  aiJobs          AiProcessingJob[]
+
+  @@index([businessId, createdAt])
+  @@index([businessId, status])
+}
+
+model BookingRecord {
+  id                String        @id @default(uuid()) @db.Uuid
+  businessId        String        @db.Uuid
+  callLogId         String?       @db.Uuid
+  externalBookingId String?
+  customerName      String
+  customerPhone     String
+  customerEmail     String?
+  serviceName       String
+  startsAt          DateTime
+  endsAt            DateTime?
+  status            BookingStatus @default(PENDING)
+  amountCents       Int?
+  currency          String        @default("INR")
+  notes             String?       @db.Text
+  metadata          Json?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  business          Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  callLog           CallLog?      @relation(fields: [callLogId], references: [id], onDelete: SetNull)
+
+  @@index([businessId, startsAt])
+  @@index([businessId, status])
+}
+
+model AiProcessingJob {
+  id            String      @id @default(uuid()) @db.Uuid
+  businessId    String      @db.Uuid
+  callLogId     String      @db.Uuid
+  jobType       AIJobType   @default(CALL_ANALYSIS)
+  status        AIJobStatus @default(PENDING)
+  model         String
+  promptVersion String      @default("v1")
+  inputPayload  Json
+  outputPayload Json?
+  errorMessage  String?     @db.Text
+  createdAt     DateTime    @default(now())
+  startedAt     DateTime?
+  completedAt   DateTime?
+  business      Business    @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  callLog       CallLog     @relation(fields: [callLogId], references: [id], onDelete: Cascade)
+
+  @@index([businessId, status])
+  @@index([callLogId, createdAt])
+}
+
+model WebhookEvent {
+  id              String          @id @default(uuid()) @db.Uuid
+  businessId      String?         @db.Uuid
+  provider        WebhookProvider
+  eventType       String
+  externalEventId String
+  signature       String?
+  payload         Json
+  status          WebhookStatus   @default(RECEIVED)
+  errorMessage    String?         @db.Text
+  receivedAt      DateTime        @default(now())
+  processedAt     DateTime?
+  business        Business?       @relation(fields: [businessId], references: [id], onDelete: SetNull)
+
+  @@unique([provider, externalEventId])
+  @@index([businessId, provider])
+  @@index([provider, status])
+}
